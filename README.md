@@ -3,6 +3,14 @@ CrashSpaceStatus --- Cordova/PhoneGap version of "AtCrashSpace" app
 
 ![screenshot](docs/crashspacestatus-iphone5-screenshot.png)
 
+To Build:
+---
+```
+npm install cordova -g
+cordova build browser
+cordova build ios
+cordova run ios
+```
 
 
 NOTES
