@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data:">
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <!-- <meta name="viewport" content="initial-scale=1, maximum-scale=1"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- Makes your prototype chrome-less once bookmarked to your phone's home screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+
+    <title>TodTestApp1</title>
+  </head>
+  <body>
+    <div id="container" >
+      <div class="panel panel-default">
+        <div class="panel-body">
+
+     <h3> CrashSpace Status </h3>
+      <div id="alertbg" class="alert">
+        <div style="border: 0px solid; height:65px">
+          <img id="logo" src="img/crashlogo-trans.png" width="25%" align="right">
+            <b style="font-size:135%">CrashSpace is:<br/>
+              &nbsp; <span id="status" class="label label-default">THINKING...</span></b>
+        </div>
+        <p id="lastMsgInfo" >
+          last message: <b id="lastMsg">what</b><br/>
+          by <i id="lastMsgId">who</i><br/>
+          <span id="lastMsgTimeLeft"></span> (<span id="lastMsgDate">then</span>)
+        </p>
+      </div>
+
+      <h4> Are you at CrashSpace? </h4>
+      <div class="form-group">
+        <label for="inputMessage" class="control-label" style="margin-bottom:0px">Message</label>
+        <!-- <div class="col-lg-10"> -->
+          <input type="text" class="form-control" id="inputMessage" placeholder="Why are you at Crash?" autocomplete="off" >
+        <!-- </div> -->
+      </div>
+      <div class="form-group">
+        <label for="inputName" class="control-label small">Name</label>
+        <!-- <div class="col-lg-10"> -->
+          <input type="text" class="form-control" id="inputName" placeholder="Your name or handle" autocomplete="off" >
+        <!-- </div> -->
+      </div>
+
+      <div class="form-group">
+        <label for="inputHours" class="control-label">Hours to stay:</label>
+        <input type="range" name="slider-fill" id="inputHours" value="1" min="0.5" max="4" step="0.5" data-highlight="true">
+      </div>
+
+      <!-- <div class="form-group"> -->
+        <input id="messageSubmit" type="button" class="btn btn-primary" value="I AM HERE!">
+      <!-- </div> -->
+
+    </div>
+  </div>
+    </div> <!-- page -->
+
+    <script src="cordova.js"></script>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/dateFormat.min.js"></script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
