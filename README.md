@@ -1,6 +1,7 @@
 CrashSpaceStatus --- Cordova/PhoneGap version of "AtCrashSpace" app
 
 
+![screenshot](docs/crashspacestatus-iphone5-screenshot.png)
 
 
 
