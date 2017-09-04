@@ -7,7 +7,9 @@ To Build:
 ---
 ```
 npm install cordova -g
+cordova prepare
 cordova build browser
+cordova run browser
 cordova build ios
 cordova run ios
 ```

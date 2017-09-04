@@ -1,5 +1,5 @@
 /*
- *
+ * CrashSpaceStatus main logic
  */
 
 var statusurl = 'https://crashspacela.com/sign/?output=json';
@@ -17,8 +17,6 @@ var app = {
         var lastDate = new Date(lastMsg.date);
         var lastDateOff = new Date( lastDate.getTime() + (lastMsg.diff_mins_max * 60*1000) );
         var lastDateOffStr = DateFormat.format.date( lastDateOff, "hh:mm a E d-MMM");
-        // var lastDateOffStr = lastDateOff.toLocaleTimeString('en-US',{hour12:true}) + " " +
-        //                      lastDateOff.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
 
         $("#lastMsgInfo").show();
         $("#lastMsg").text( lastMsg.msg );
@@ -106,13 +104,6 @@ var app = {
         StatusBar.styleDefault();
 
         self.getResponse();
-
-        // this.receivedEvent('deviceready');
-
-        // $.ajax({
-        //     url: statusurl,
-        //     success: self.handleResponse
-        // }); // use promises
 
     },
 
