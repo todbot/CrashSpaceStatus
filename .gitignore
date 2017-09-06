@@ -1,6 +1,9 @@
 # Mac
 .DS_Store
 
+# Node
+node_modules
+
 # iOS
 platforms/ios/build/
 platforms/ios/www/

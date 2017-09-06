@@ -3,11 +3,26 @@
  */
 
 var statusurl = 'https://crashspacela.com/sign/?output=json';
-// var statusurl = 'https://crashspacela.com/sign-tst/?output=json&debug=true';
+// var statusurl = 'https://crashspacela.com/sign-tst/?output=json&debug=false';
+// var statusurl = 'https://crashspacela.com/sign-tst/?output=json';
+var fetchInterval = 15 * 1000;
 
 var app = {
+    fetchTimer: null,
+    startFetching: function() {
+        var self = this;
+        self.getResponse(); // start it off without delay
+        if( !self.fetchTimer ) {
+            self.fetchTimer = setInterval( self.getResponse.bind(self), fetchInterval );
+        }
+    },
+    stopFetching: function() {
+        var self = this;
+        clearInterval( self.fetchTimer );
+        self.fetchTimer = null;
+    },
     // initialized: false,
-    handleResponse: function(response) {
+    handleResponse: function(response,data) {
         console.log("handleResponse success! is_open:", response.is_open, " minutes_left:", response.minutes_left);
 
         $("#is_open").text("is_open: " + response.is_open) ;
@@ -16,23 +31,36 @@ var app = {
         var lastMsg = response.button_presses[0];  // FIXME: check this
         var lastDate = new Date(lastMsg.date);
         var lastDateOff = new Date( lastDate.getTime() + (lastMsg.diff_mins_max * 60*1000) );
-        var lastDateOffStr = DateFormat.format.date( lastDateOff, "hh:mm a E d-MMM");
+        var lastDateOffStr = DateFormat.format.date( lastDateOff, "hh:mm a d-MMM");
+        var mins_ago = Math.abs(Math.round( (new Date() - lastDateOff) / (60*1000) ));
+
+        if( data != null &&  // it was a button press by us
+            (response.minutes_left != lastMsg.diff_mins_max) ) {  // if they don't match something's wrong
+                console.log("OOOPS");
+            $('#errorMsg').text("Oops: Couldn't update button! Are you at the space?").show();
+        } else {
+            $('#errorMsg').text('').hide();
+        }
 
         $("#lastMsgInfo").show();
         $("#lastMsg").text( lastMsg.msg );
         $("#lastMsgId").text( lastMsg.id );
         $("#lastMsgDate").text( lastDateOffStr );
 
-        var mins_ago = Math.round( (new Date() - lastDateOff) / (60*1000) );
         console.log("lastMsg:",lastMsg.msg, ",", lastMsg.id, ",", lastMsg.date, "mins_ago:",mins_ago);
         if( response.is_open ) {
+            var timeleftstr = mins_ago + " minutes left";
             $("#status").text( "OPEN" );
-            $("#alertbg").removeClass("alert-warning alert-danger").addClass("alert-success");
-            $("#lastMsgTimeLeft").text( (-mins_ago) + " minutes left");
+            $("#alertbg").removeClass("alert-warning").addClass("alert-success");
+            $("#lastMsgTimeLeft").text( );
         } else {
+            var timeleftstr = mins_ago + " minutes ago";
+            if( mins_ago > 100 ) {
+                timeleftstr = Math.floor( mins_ago/60 ) + " hours ago";
+            }
             $("#status").text( "CLOSED" );
-            $("#alertbg").removeClass("alert-warning alert-success").addClass("alert-danger");
-            $("#lastMsgTimeLeft").text( mins_ago + " minutes ago");
+            $("#alertbg").removeClass("alert-success").addClass("alert-warning");
+            $("#lastMsgTimeLeft").text( timeleftstr );
         }
     },
     getResponse: function(url,data) {
@@ -43,7 +71,7 @@ var app = {
             cache: false,
             url: statusurl,
             data: data,
-            success: self.handleResponse,
+            success: function(resp) { self.handleResponse.call(self,resp,data); },
             error: function(jqXHR, exception) {
                 console.log("error:",jqXHR);
             }
@@ -66,17 +94,14 @@ var app = {
     // Application Constructor
     initialize: function() {
         var self = this;
-
-        document.addEventListener('deviceready', self.onDeviceReady.bind(self), false);
         console.log("in initialize");
 
-        $("#logo").click(function() {
-            self.getResponse();
-        });
+        document.addEventListener('deviceready', self.onDeviceReady.bind(self), false);
+        document.addEventListener('pause', self.onPause.bind(self), false);
+        document.addEventListener('resume', self.onResume.bind(self), false);
 
-        $("#getState").click(function(){
-            console.log("click!");
-            self.getResponse();
+        $("#logo").click(function() {
+            self.startFetching();
         });
 
         $("#messageSubmit").click(function() {
@@ -89,13 +114,10 @@ var app = {
         });
 
         // FIXME: hack for testing
-        setTimeout( function() {self.getResponse();} , 1000 );
+        // setTimeout( function() {self.getResponse();} , 1000 );
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
+    // 'deviceready' event handler
     onDeviceReady: function() {
         var self = this;
         console.log("onDeviceReady");
@@ -103,21 +125,25 @@ var app = {
         StatusBar.backgroundColorByHexString('#ff00ff');
         StatusBar.styleDefault();
 
-        self.getResponse();
-
+        self.startFetching();
     },
-
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }
+    // 'pause' Event Handler
+    onPause: function() {
+        var self = this;
+        console.log("onPause");
+        self.stopFetching();
+    },
+    // 'resume' event handler
+    // see ios quirks on resume
+    // https://cordova.apache.org/docs/en/latest/cordova/events/events.html
+    onResume: function() {
+        var self = this;
+        setTimeout(function() {
+            // TODO: do your thing!
+            console.log("onResume");
+            self.startFetching();
+        }, 0);
+    },
 };
 
 app.initialize();
